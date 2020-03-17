@@ -788,16 +788,140 @@ public class FEAAFacadeImplTest {
     }
 
 
+
     /**
      * Testing setAccountIncomings
      */
+    @Test(expected = IllegalStateException.class)
+    public void setAccIn_NullProvider_IStateExcep() {
+        feaaFacade.setAccountIncomings(1, 10);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccIn_NoMatchID_IStateExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.setAccountIncomings(2, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setAccIn_IDZero_IArgExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.setAccountIncomings(0, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setAccIn_IDNeg_IArgExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.setAccountIncomings(-1, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setAccIn_InNeg_IArgExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.setAccountIncomings(1, -25);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccIn_Acc2_Income70() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.addAccount(2, 45, "Acc45", 20, 30);
+        feaaFacade.addAccount(6, 67, "Acc67", 11, 7);
+
+        feaaFacade.setAccountIncomings(2, 70);
+        assertEquals(70, feaaFacade.getAccountIncomings(2));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccIn_Acc6_Income0() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.addAccount(2, 45, "Acc45", 20, 30);
+        feaaFacade.addAccount(6, 67, "Acc67", 11, 7);
+
+        feaaFacade.setAccountIncomings(6, 0);
+        assertEquals(0, feaaFacade.getAccountIncomings(6));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccIn_EmptyAcc_Income0() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.setAccountIncomings(6, 0);
+    }
+
+
+    /**
+     * Testing setAccountOutgoings
+     */
+    @Test(expected = IllegalStateException.class)
+    public void setAccOut_NullProvider_IStateExcep() {
+        feaaFacade.setAccountOutgoings(1, 10);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccOut_NoMatchID_IStateExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.setAccountOutgoings(2, 20);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setAccOut_IDZero_IArgExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.setAccountOutgoings(0, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setAccOut_IDNeg_IArgExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.setAccountOutgoings(-3, 30);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setAccOut_OutNeg_IArgExcep() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.setAccountOutgoings(1, -30);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccOut_OutZero_Out0() {
+        feaaFacade.setClientProvider(provider);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.setAccountOutgoings(1, 0);
+        assertEquals(0, feaaFacade.getAccountOutgoings(1));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setAccOut_Acc2_Out50() {
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+        feaaFacade.addAccount(2, 45, "Acc45", 20, 30);
+        feaaFacade.addAccount(6, 67, "Acc67", 11, 7);
+
+        feaaFacade.setAccountOutgoings(2, 50);
+        assertEquals(50, feaaFacade.getAccountOutgoings(2));
+    }
 
     /**
      * Testing setClientProvider
      */
-    @Test
-    public void setClientP_clientL_CheckID() {
-        this.feaaFacade.setClientProvider(provider);
+    @Test(expected = IllegalStateException.class)
+    public void setClientP_NullProvider_CheckID() {
+        feaaFacade.setClientProvider(null);
+        feaaFacade.addAccount(1, 23, "Acc23", 10, 5);
+    }
 
+    @Test
+    public void setClientP_Provider_EmptyAccs() {
+        feaaFacade.setClientProvider(provider);
+        assertEquals(0, feaaFacade.getAccounts().size());
+    }
+
+    @Test
+    public void setClientP_NewProvider_ClientID() {
+        feaaFacade.setClientProvider(provider);
+        assertEquals(97, feaaFacade.addClient("fN", "lN", "12345").getID());
     }
 }
